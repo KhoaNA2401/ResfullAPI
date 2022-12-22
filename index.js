@@ -71,6 +71,24 @@ app.get('/admin/getproducts/:id', async (req, res) => {
     }
 });
 
+//search products with query 
+app.get('/admin/searchproducts/:name', async (req, res) => {
+    try {
+        const userRef = db.collection('products');
+        const response = await userRef.where('name', '==', req.params.name).get();
+        let responseArr = [];
+        response.forEach(doc => {
+            responseArr.push(doc.data());
+            console.log(doc.data());
+        });
+        res.send(responseArr);
+    } catch (err) {
+        res.send(err);
+        console.log(err);
+    }
+});
+
+
 //update products
 app.put('/admin/updateproducts/:id', async (req, res) => {
     try {
@@ -341,7 +359,7 @@ app.post('/client/addtocart', async (req, res) => {
             cus_id: req.body.cus_id,
             pro_id: req.body.pro_id,
             quantity: req.body.quantity,
-            status:  "cart",
+            status: "cart",
         };
         const addtocart = db.collection('cart').doc(id).set(modelJson);
         res.send(addtocart + "đã thêm vào giỏ hàng");
@@ -390,18 +408,18 @@ app.post('/client/addtocart', async (req, res) => {
 //     }
 // });
 app.get('/client/getcart/:id', async (req, res) => {
-     try {
-         const userRef = db.collection('cart');
-         const response = await userRef.where('cus_id', '==', req.params.id).get();
-         let responseArr = [];
-         response.forEach(doc => {
-             responseArr.push(doc.data());
-         });
-         
-         res.send(responseArr);
-     } catch (error) {
-        
-     }
+    try {
+        const userRef = db.collection('cart');
+        const response = await userRef.where('cus_id', '==', req.params.id).get();
+        let responseArr = [];
+        response.forEach(doc => {
+            responseArr.push(doc.data());
+        });
+
+        res.send(responseArr);
+    } catch (error) {
+
+    }
 });
 
 //client update cart
@@ -419,7 +437,7 @@ app.get('/client/getcart/:id', async (req, res) => {
 // });
 
 app.put('/client/updatecart/:id', async (req, res) => {
-    try { 
+    try {
         const userRef = db.collection('cart').doc(req.params.id);
         const response = await userRef.update({
             quantity: req.body.quantity
